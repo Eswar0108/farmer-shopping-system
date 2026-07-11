@@ -1,0 +1,55 @@
+/* ===== Admin Login ===== */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-title {
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+/* ===== Admin Dashboard ===== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== Edit/Add Product ===== */
+.product-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.product-form-container h2 {
+  margin-bottom: 1rem;
+}
+
+/* ===== Stock Modal ===== */
+.stock-modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.stock-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin: 1rem 0;
+  box-sizing: border-box;
+}
