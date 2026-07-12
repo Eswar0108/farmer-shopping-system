@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api.v1 import auth, products, cart, orders, categories, customer_auth, admin_ai, ai
+from app.api.v1 import auth, products, cart, orders, categories, customer_auth, admin_ai, ai, admin_dashboard
 
 # Create all tables (for development - in production use Alembic)
 Base.metadata.create_all(bind=engine)
@@ -36,6 +36,7 @@ app.include_router(categories.router, prefix="/api/v1")
 app.include_router(cart.router, prefix="/api/v1")
 app.include_router(orders.router, prefix="/api/v1")
 app.include_router(admin_ai.router, prefix="/api/v1")
+app.include_router(admin_dashboard.router, prefix="/api/v1")
 app.include_router(ai.router, prefix="/api/v1")
 
 
