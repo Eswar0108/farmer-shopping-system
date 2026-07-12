@@ -83,8 +83,15 @@ class ProductService:
 
     def delete_product(self, product_id: UUID) -> None:
         product = self.get_product_by_id(product_id)
-        self.db.delete(product)
-        self.db.commit()
+        try:
+            self.db.delete(product)
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot delete product because it has been ordered by customers. Please deactivate it instead to remove it from storefront displays.",
+            )
 
     def update_status(self, product_id: UUID, is_active: bool) -> Product:
         product = self.get_product_by_id(product_id)
