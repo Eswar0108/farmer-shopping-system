@@ -94,8 +94,22 @@ export default function ProductDetails() {
               {product.name}
             </h2>
             <p className="text-sm font-medium text-gray-400">Harvested by <span className="text-gray-600 font-semibold">{product.farmer_name}</span></p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-gray-900">₹{product.price.toFixed(2)}</span>
+            <div className="flex items-baseline gap-3">
+              {product.discount_amount > 0 ? (
+                <>
+                  <span className="text-3xl font-black text-emerald-800">
+                    ₹{(product.price - product.discount_amount).toFixed(2)}
+                  </span>
+                  <span className="text-base text-gray-400 line-through font-semibold">
+                    ₹{product.price.toFixed(2)}
+                  </span>
+                  <span className="px-2 py-1 bg-amber-500 text-emerald-950 text-[10px] font-extrabold rounded-lg shadow-sm border border-amber-400">
+                    ₹{product.discount_amount.toFixed(0)} OFF
+                  </span>
+                </>
+              ) : (
+                <span className="text-3xl font-black text-gray-900">₹{product.price.toFixed(2)}</span>
+              )}
             </div>
             {product.description && (
               <p className="text-sm leading-relaxed text-gray-500 font-medium pt-2 border-t border-gray-50">

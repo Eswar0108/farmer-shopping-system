@@ -46,6 +46,11 @@ class ProductService:
 
     def create_product(self, data: ProductCreate) -> Product:
         self._get_category_or_404(data.category_id)
+        if data.discount_amount is not None and data.discount_amount > data.price:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Discount amount cannot exceed the product base price",
+            )
 
         product = Product(**data.model_dump())
         self.db.add(product)
@@ -59,6 +64,15 @@ class ProductService:
 
         if "category_id" in update_data:
             self._get_category_or_404(update_data["category_id"])
+
+        target_price = update_data.get("price", float(product.price))
+        target_discount = update_data.get("discount_amount", float(product.discount_amount))
+
+        if target_discount > target_price:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Discount amount cannot exceed the product base price",
+            )
 
         for key, value in update_data.items():
             setattr(product, key, value)

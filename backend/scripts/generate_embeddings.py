@@ -30,7 +30,10 @@ def generate_all_embeddings():
         for p in products:
             # Build description text block for embeddings
             category_name = p.category.name if p.category else "General"
-            doc_text = f"Product: {p.name}. Category: {category_name}. Farmer: {p.farmer_name}. Price: ₹{p.price}. Description: {p.description or ''}"
+            discount = float(p.discount_amount)
+            selling_price = max(0.0, float(p.price) - discount)
+            discount_text = f" Discount: ₹{discount:.2f} off. Special Price: ₹{selling_price:.2f}." if discount > 0 else ""
+            doc_text = f"Product: {p.name}. Category: {category_name}. Farmer: {p.farmer_name}. Price: ₹{p.price:.2f}.{discount_text} Description: {p.description or ''}"
             
             print(f"Generating embedding for: '{p.name}'...")
             emb = embedding_model.encode(doc_text).tolist()
@@ -41,7 +44,7 @@ def generate_all_embeddings():
             metadatas.append({
                 "product_id": str(p.id),
                 "name": p.name,
-                "price": float(p.price),
+                "price": selling_price,
                 "stock": int(p.available_quantity),
                 "category": category_name,
                 "farmer": p.farmer_name,

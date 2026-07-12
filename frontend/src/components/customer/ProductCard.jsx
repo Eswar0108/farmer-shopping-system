@@ -19,6 +19,11 @@ export default function ProductCard({ product }) {
         ) : (
           <span className="text-4xl select-none">🌾</span>
         )}
+        {product.discount_amount > 0 && (
+          <div className="absolute top-3 left-3 bg-amber-500 text-emerald-950 font-extrabold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-md border border-amber-400">
+            ₹{product.discount_amount.toFixed(0)} OFF
+          </div>
+        )}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center">
             <span className="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -40,7 +45,16 @@ export default function ProductCard({ product }) {
           </span>
         )}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
-          <span className="text-lg font-extrabold text-gray-900">₹{product.price.toFixed(2)}</span>
+          {product.discount_amount > 0 ? (
+            <div className="flex flex-col">
+              <span className="text-[11px] text-gray-400 line-through">₹{product.price.toFixed(2)}</span>
+              <span className="text-lg font-extrabold text-emerald-800">
+                ₹{(product.price - product.discount_amount).toFixed(2)}
+              </span>
+            </div>
+          ) : (
+            <span className="text-lg font-extrabold text-gray-900">₹{product.price.toFixed(2)}</span>
+          )}
           <span className="text-xs text-gray-500 font-medium">
             {!isOutOfStock ? `${product.available_quantity} available` : 'Sold out'}
           </span>

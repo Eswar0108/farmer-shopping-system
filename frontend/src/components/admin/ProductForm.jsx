@@ -19,6 +19,13 @@ const productSchema = z.object({
     z.number({ invalid_type_error: 'Stock must be an integer' }).int().nonnegative('Stock cannot be negative')
   ),
   image_url: z.string().optional().or(z.literal('')),
+  discount_amount: z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? 0.0 : parseFloat(val)),
+    z.number({ invalid_type_error: 'Discount must be a number' }).nonnegative('Discount cannot be negative')
+  ),
+}).refine((data) => data.discount_amount <= data.price, {
+  message: 'Discount amount cannot exceed the product price',
+  path: ['discount_amount'],
 });
 
 export default function ProductForm({ initialData = null, categories = [], onSubmit, onCancel, loading = false }) {
@@ -38,6 +45,7 @@ export default function ProductForm({ initialData = null, categories = [], onSub
       price: '',
       available_quantity: '',
       image_url: '',
+      discount_amount: 0.0,
     },
   });
 
@@ -59,6 +67,7 @@ export default function ProductForm({ initialData = null, categories = [], onSub
       setValue('price', initialData.price || '');
       setValue('available_quantity', initialData.available_quantity || 0);
       setValue('image_url', initialData.image_url || '');
+      setValue('discount_amount', initialData.discount_amount || 0.0);
     }
   }, [initialData, setValue]);
 
@@ -177,8 +186,8 @@ export default function ProductForm({ initialData = null, categories = [], onSub
         {errors.description && <p className="text-xs text-red-500 font-semibold">{errors.description.message}</p>}
       </div>
 
-      {/* Row for price and available quantity */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Row for price, stock, and discount */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-bold text-gray-700">Price (₹) *</label>
           <div className="flex gap-2">
@@ -209,6 +218,17 @@ export default function ProductForm({ initialData = null, categories = [], onSub
             className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 transition"
           />
           {errors.available_quantity && <p className="text-xs text-red-500 font-semibold">{errors.available_quantity.message}</p>}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-bold text-gray-700">Discount (₹)</label>
+          <input
+            type="number"
+            step="0.01"
+            {...register('discount_amount')}
+            className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 transition"
+          />
+          {errors.discount_amount && <p className="text-xs text-red-500 font-semibold">{errors.discount_amount.message}</p>}
         </div>
       </div>
 

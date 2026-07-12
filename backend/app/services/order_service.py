@@ -38,11 +38,14 @@ class OrderService:
             # Deduct stock
             product.available_quantity -= cart_item.quantity
 
-            subtotal = product.price * cart_item.quantity
+            discounted_price = product.price - product.discount_amount
+            if discounted_price < Decimal("0.00"):
+                discounted_price = Decimal("0.00")
+            subtotal = discounted_price * cart_item.quantity
             total += subtotal
             order_items_data.append({
                 "product_id": product.id,
-                "unit_price": product.price,
+                "unit_price": discounted_price,
                 "quantity": cart_item.quantity,
             })
 

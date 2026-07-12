@@ -28,7 +28,17 @@ export default function ProductTable({ products, onToggleStatus, onDelete, onEdi
                   </span>
                 </td>
                 <td className="px-6 py-4 font-medium text-gray-600">{p.farmer_name}</td>
-                <td className="px-6 py-4 font-bold text-gray-900">₹{p.price.toFixed(2)}</td>
+                <td className="px-6 py-4 text-gray-900">
+                  {p.discount_amount > 0 ? (
+                    <div className="flex flex-col">
+                      <span className="font-bold text-emerald-800">₹{(p.price - p.discount_amount).toFixed(2)}</span>
+                      <span className="text-[10px] text-gray-400 line-through">₹{p.price.toFixed(2)}</span>
+                      <span className="text-[9px] text-amber-600 font-bold">₹{p.discount_amount.toFixed(0)} OFF</span>
+                    </div>
+                  ) : (
+                    <span className="font-bold">₹{p.price.toFixed(2)}</span>
+                  )}
+                </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-800">{p.available_quantity}</span>

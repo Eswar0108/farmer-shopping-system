@@ -22,14 +22,15 @@ class CartService:
 
         for item in cart.items:
             product = item.product
-            subtotal = float(product.price) * item.quantity
+            unit_price = max(0.0, float(product.price) - float(product.discount_amount))
+            subtotal = unit_price * item.quantity
             cart_items.append(
                 CartItemOut(
                     id=item.id,
                     product_id=product.id,
                     product_name=product.name,
                     product_image_url=product.image_url,
-                    price=float(product.price),
+                    price=unit_price,
                     quantity=item.quantity,
                     subtotal=subtotal,
                     max_stock=product.available_quantity,

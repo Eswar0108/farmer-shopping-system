@@ -20,5 +20,6 @@ class Product(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    discount_amount = Column(Numeric(10, 2), default=0.0, nullable=False, server_default="0.0")
 
     category = relationship("Category", backref="products")
