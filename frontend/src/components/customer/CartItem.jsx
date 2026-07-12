@@ -15,7 +15,15 @@ export default function CartItem({ item, onQuantityChange, onRemove }) {
         </div>
         <div>
           <h4 className="font-bold text-gray-800 text-sm sm:text-base">{item.product_name}</h4>
-          <span className="text-xs font-semibold text-gray-400 mt-1 block">₹{item.price.toFixed(2)} each</span>
+          {item.discount_amount > 0 ? (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs font-bold text-emerald-700">₹{item.price.toFixed(2)} each</span>
+              <span className="text-[10px] text-gray-400 line-through">₹{(item.price + item.discount_amount).toFixed(2)}</span>
+              <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded-md">₹{item.discount_amount.toFixed(0)} off</span>
+            </div>
+          ) : (
+            <span className="text-xs font-semibold text-gray-400 mt-1 block">₹{item.price.toFixed(2)} each</span>
+          )}
         </div>
       </div>
 

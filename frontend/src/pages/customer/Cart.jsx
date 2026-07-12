@@ -92,6 +92,20 @@ export default function Cart() {
                 <span>Total Items</span>
                 <span>{cart.total_items} items</span>
               </div>
+              
+              {cart.items.some(item => item.discount_amount > 0) && (
+                <>
+                  <div className="flex items-center justify-between text-sm text-gray-500 font-semibold pt-1">
+                    <span>Original Price</span>
+                    <span className="line-through">₹{(cart.grand_total + cart.items.reduce((acc, item) => acc + (item.discount_amount * item.quantity), 0)).toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-amber-600 font-bold pt-1">
+                    <span>Discount Savings</span>
+                    <span>-₹{cart.items.reduce((acc, item) => acc + (item.discount_amount * item.quantity), 0).toFixed(2)}</span>
+                  </div>
+                </>
+              )}
+              
               <div className="flex items-baseline justify-between pt-3 border-t border-gray-50">
                 <span className="text-sm font-bold text-gray-700">Subtotal</span>
                 <span className="text-xl font-extrabold text-emerald-800">₹{cart.grand_total.toFixed(2)}</span>

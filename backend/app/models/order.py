@@ -38,3 +38,7 @@ class OrderItem(Base):
     @property
     def subtotal(self) -> float:
         return float(self.unit_price) * self.quantity
+
+    @property
+    def discount_amount(self) -> float:
+        return float(self.product.discount_amount) if self.product else 0.0

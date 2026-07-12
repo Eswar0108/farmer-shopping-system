@@ -34,6 +34,7 @@ class CartService:
                     quantity=item.quantity,
                     subtotal=subtotal,
                     max_stock=product.available_quantity,
+                    discount_amount=float(product.discount_amount),
                 )
             )
             total_items += item.quantity

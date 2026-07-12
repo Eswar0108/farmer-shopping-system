@@ -104,8 +104,18 @@ export default function Orders() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs font-bold text-gray-700">₹{item.subtotal.toFixed(2)}</p>
-                          <p className="text-[9px] text-gray-400 font-medium mt-0.5">₹{item.unit_price.toFixed(2)} each</p>
+                          <p className="text-xs font-bold text-emerald-800">₹{item.subtotal.toFixed(2)}</p>
+                          {item.discount_amount > 0 ? (
+                            <>
+                              <div className="flex items-center gap-1.5 justify-end mt-0.5">
+                                <p className="text-[9px] text-gray-700 font-bold">₹{item.unit_price.toFixed(2)} each</p>
+                                <p className="text-[9px] text-gray-400 line-through">₹{(item.unit_price + item.discount_amount).toFixed(2)}</p>
+                              </div>
+                              <p className="text-[8px] text-amber-600 font-bold mt-0.5">₹{item.discount_amount.toFixed(0)} savings/unit</p>
+                            </>
+                          ) : (
+                            <p className="text-[9px] text-gray-400 font-medium mt-0.5">₹{item.unit_price.toFixed(2)} each</p>
+                          )}
                         </div>
                       </div>
                     ))}

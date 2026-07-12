@@ -11,6 +11,7 @@ class OrderItemOut(BaseModel):
     unit_price: float
     quantity: int
     subtotal: float
+    discount_amount: float
 
     class Config:
         from_attributes = True

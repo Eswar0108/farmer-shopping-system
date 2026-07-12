@@ -101,7 +101,12 @@ export default function Checkout() {
               <div key={item.product_id} className="py-4 flex justify-between items-center text-sm font-semibold">
                 <div className="flex flex-col">
                   <span className="text-gray-800">{item.product_name}</span>
-                  <span className="text-xs text-gray-400 mt-1">Quantity: {item.quantity} × ₹{item.price.toFixed(2)}</span>
+                  <span className="text-xs text-gray-400 mt-1">
+                    Quantity: {item.quantity} × <span className="font-bold text-emerald-800">₹{item.price.toFixed(2)}</span>
+                    {item.discount_amount > 0 && (
+                      <span className="line-through pl-1 text-[10px]">₹{(item.price + item.discount_amount).toFixed(2)}</span>
+                    )}
+                  </span>
                 </div>
                 <span className="text-gray-900 font-extrabold">₹{item.subtotal.toFixed(2)}</span>
               </div>
@@ -117,6 +122,18 @@ export default function Checkout() {
               <span>Total Items</span>
               <span className="font-semibold text-gray-800">{cart.total_items} items</span>
             </div>
+            {cart.items.some(item => item.discount_amount > 0) && (
+              <>
+                <div className="flex justify-between text-gray-500 pt-1">
+                  <span>Original Price</span>
+                  <span className="line-through">₹{(cart.grand_total + cart.items.reduce((acc, item) => acc + (item.discount_amount * item.quantity), 0)).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-amber-600 font-bold pt-1">
+                  <span>Discount Savings</span>
+                  <span>-₹{cart.items.reduce((acc, item) => acc + (item.discount_amount * item.quantity), 0).toFixed(2)}</span>
+                </div>
+              </>
+            )}
             <div className="flex justify-between items-baseline pt-3 border-t border-gray-50">
               <span className="font-bold text-gray-700">Grand Total</span>
               <span className="text-2xl font-black text-emerald-800">₹{cart.grand_total.toFixed(2)}</span>

@@ -22,6 +22,7 @@ class CartItemOut(BaseModel):
     quantity: int
     subtotal: float
     max_stock: int
+    discount_amount: float
 
     class Config:
         from_attributes = True
