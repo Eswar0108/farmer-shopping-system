@@ -49,6 +49,12 @@ export default function Navbar() {
             <Link to="/products" className="text-emerald-100 hover:text-white font-medium text-sm transition">
               Products
             </Link>
+
+            {isCustomerAuthenticated && (
+              <Link to="/orders" className="text-emerald-100 hover:text-white font-medium text-sm transition">
+                My Orders
+              </Link>
+            )}
             
             <Link to="/cart" className="relative flex items-center p-2 rounded-full text-emerald-100 hover:text-white hover:bg-emerald-700 transition">
               <ShoppingCart size={20} />

@@ -11,6 +11,7 @@ import Cart from '../pages/customer/Cart';
 import Checkout from '../pages/customer/Checkout';
 import CustomerLogin from '../pages/customer/Login';
 import CustomerRegister from '../pages/customer/Register';
+import Orders from '../pages/customer/Orders';
 
 import AdminLogin from '../pages/admin/Login';
 import AdminDashboard from '../pages/admin/Dashboard';
@@ -43,6 +44,14 @@ export default function AppRoutes() {
           element={
             <CustomerProtectedRoute>
               <Checkout />
+            </CustomerProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <CustomerProtectedRoute>
+              <Orders />
             </CustomerProtectedRoute>
           }
         />
