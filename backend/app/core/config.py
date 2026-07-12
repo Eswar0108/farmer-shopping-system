@@ -19,9 +19,14 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "admin@farmershop.com"
     ADMIN_PASSWORD: str = "admin123"
 
+    # AI / Groq
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.2-70b-preview"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()

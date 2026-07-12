@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Sparkles, Loader2 } from 'lucide-react';
+import { aiService } from '../../services/ai.service';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200, 'Max 200 characters'),
@@ -25,6 +27,7 @@ export default function ProductForm({ initialData = null, categories = [], onSub
     handleSubmit,
     setValue,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -38,6 +41,15 @@ export default function ProductForm({ initialData = null, categories = [], onSub
     },
   });
 
+  const [generatingDesc, setGeneratingDesc] = useState(false);
+  const [suggestingPrice, setSuggestingPrice] = useState(false);
+  const [priceSuggestion, setPriceSuggestion] = useState(null);
+
+  const watchedName = watch('name');
+  const watchedCategoryId = watch('category_id');
+  const watchedFarmerName = watch('farmer_name');
+  const watchedPrice = watch('price');
+
   useEffect(() => {
     if (initialData) {
       setValue('name', initialData.name || '');
@@ -50,8 +62,60 @@ export default function ProductForm({ initialData = null, categories = [], onSub
     }
   }, [initialData, setValue]);
 
+  const handleGenerateDescription = async () => {
+    if (!watchedName || !watchedCategoryId || !watchedFarmerName) {
+      alert("Please fill in Product Name, Category, and Farmer Name first.");
+      return;
+    }
+    const catName = categories.find((c) => c.id === watchedCategoryId)?.name || '';
+    setGeneratingDesc(true);
+    try {
+      const res = await aiService.describeProduct({
+        name: watchedName,
+        price: watchedPrice || 0,
+        category: catName,
+        farmer_name: watchedFarmerName,
+      });
+      setValue('description', res.description);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to generate description');
+    } finally {
+      setGeneratingDesc(false);
+    }
+  };
+
+  const handleSuggestPrice = async () => {
+    if (!watchedName || !watchedCategoryId) {
+      alert("Please fill in Product Name and Category first.");
+      return;
+    }
+    const catName = categories.find((c) => c.id === watchedCategoryId)?.name || '';
+    setSuggestingPrice(true);
+    setPriceSuggestion(null);
+    try {
+      const res = await aiService.suggestPrice({
+        name: watchedName,
+        category: catName,
+      });
+      setPriceSuggestion(res);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to suggest price');
+    } finally {
+      setSuggestingPrice(false);
+    }
+  };
+
+  const applySuggestedPrice = (val) => {
+    // Parse first numeric value found in suggestions string
+    const match = val.match(/\d+(\.\d+)?/);
+    if (match) {
+      setValue('price', match[0]);
+    }
+    setPriceSuggestion(null);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5 max-w-xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5 max-w-xl font-sans">
       {/* Name */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-bold text-gray-700">Product Name *</label>
@@ -93,7 +157,18 @@ export default function ProductForm({ initialData = null, categories = [], onSub
 
       {/* Description */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-bold text-gray-700">Description</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-gray-700">Description</label>
+          <button
+            type="button"
+            onClick={handleGenerateDescription}
+            disabled={generatingDesc}
+            className="px-3 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl border border-emerald-200 text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+          >
+            {generatingDesc ? <Loader2 className="animate-spin" size={12} /> : <Sparkles size={12} />}
+            Auto-Write with AI
+          </button>
+        </div>
         <textarea
           {...register('description')}
           rows={3}
@@ -105,13 +180,24 @@ export default function ProductForm({ initialData = null, categories = [], onSub
       {/* Row for price and available quantity */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-bold text-gray-700">Price ($) *</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register('price')}
-            className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 transition"
-          />
+          <label className="text-sm font-bold text-gray-700">Price (₹) *</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              step="0.01"
+              {...register('price')}
+              className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 transition w-full"
+            />
+            <button
+              type="button"
+              onClick={handleSuggestPrice}
+              disabled={suggestingPrice}
+              className="px-3 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl border border-emerald-200 text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer whitespace-nowrap"
+            >
+              {suggestingPrice ? <Loader2 className="animate-spin" size={14} /> : <Sparkles size={14} />}
+              AI Price
+            </button>
+          </div>
           {errors.price && <p className="text-xs text-red-500 font-semibold">{errors.price.message}</p>}
         </div>
 
@@ -125,6 +211,25 @@ export default function ProductForm({ initialData = null, categories = [], onSub
           {errors.available_quantity && <p className="text-xs text-red-500 font-semibold">{errors.available_quantity.message}</p>}
         </div>
       </div>
+
+      {/* Price suggestions box if available */}
+      {priceSuggestion && (
+        <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 space-y-2 text-xs text-gray-700">
+          <div className="flex justify-between items-center font-bold text-emerald-850">
+            <span>AI Price Suggestion</span>
+            <button
+              type="button"
+              onClick={() => applySuggestedPrice(priceSuggestion.price)}
+              className="px-2 py-0.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-semibold cursor-pointer"
+            >
+              Apply Suggested (₹)
+            </button>
+          </div>
+          <div><span className="font-bold">Suggested:</span> {priceSuggestion.price}</div>
+          <div><span className="font-bold">Range:</span> {priceSuggestion.range}</div>
+          <div><span className="font-bold">Reasoning:</span> {priceSuggestion.reason}</div>
+        </div>
+      )}
 
       {/* Image URL */}
       <div className="flex flex-col gap-1.5">
